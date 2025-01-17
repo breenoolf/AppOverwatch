@@ -1,8 +1,7 @@
 import mysql.connector
 import os, platform
 def create_connection():
-    conexao = mysql.connector.connect(user='root', password='Zz2020200*', host='127.0.0.1')
-    print('Conexão db:', conexao)  # Teste
+    conexao = mysql.connector.connect(user='root', password='Zz2020200*', host='127.0.0.1')  # Teste
     return conexao
 
 def base():
@@ -120,11 +119,13 @@ def inserts():
 def selects():
     try:
         while True:
+            print('Boas-vindas ao AppOverwatch, o melhor app para busca de personagens do jogo!\n')
             escolha_busca_nome = input('Deseja pesquisar um único personagem? (SIM | NÃO)\nSe deseja sair da aplicação digite "Sair"\n')
             if escolha_busca_nome.upper() == 'SAIR':
                         limpar_terminal()
                         break  
             if escolha_busca_nome.upper() == 'SIM':
+                limpar_terminal()
                 nome_personagem = input('Digite o nome do personagem: ')
                 
                 # Proteção contra SQL Injection
@@ -144,10 +145,15 @@ def selects():
                 elif nova_pesquisa.upper() in ['NÃO', 'NAO']:
                     limpar_terminal()
                     break
+                else:
+                    limpar_terminal()
+                    print('Por favor, digite apenas SIM ou NÃO.')
+                    input('Digite ENTER para tentar novamente.')
+                    limpar_terminal()
             elif escolha_busca_nome.upper() in ['NÃO', 'NAO']:
-                
+                    limpar_terminal()
                     #Busca todos os personagens de determinada classe
-                    escolha_busca_classe = input('Qual classe de personagem deseja buscar? (DPS | TANK | SUPORTE)\nSe deseja sair da aplicação digite "Sair"\n')
+                    escolha_busca_classe = input('\nQual classe de personagem deseja buscar? (DPS | TANK | SUPORTE)\nSe deseja sair da aplicação digite "Sair"\n')
 
                     if escolha_busca_classe.upper() == 'SAIR':
                         limpar_terminal()
@@ -155,26 +161,30 @@ def selects():
 
                     #Verifica se o valor digitado pelo usuário é uma das classes existentes
                     if escolha_busca_classe.upper() not in ['DPS', 'TANK', 'SUPORTE']:
+                        limpar_terminal()
                         print("Classe inválida. Por favor, escolha entre DPS, TANK ou SUPORTE.")
-                        input('Digite qualquer tecla para escrever novamente.')
+                        input('Digite ENTER para tentar novamente.')
                         limpar_terminal()
 
-                    
-
-                    # Consulta de todos os personagens por classe
+                    #Consulta de todos os personagens por classe
                     sql_classe = f"SELECT nome, descricao FROM Personagens WHERE classe = '{escolha_busca_classe.upper()}'"
                     cursor.execute(sql_classe)
                     resultados = cursor.fetchall()
+                
                     for personagem in resultados:
-                        print(f'{personagem[0]} | {personagem[1]}')
-                        print('')
-                    if not resultados: #Caso o banco não tenha personagens no banco de dados
-                            print(f"Nenhum personagem encontrado na classe '{escolha_busca_classe.upper()}'.")
+                        print(f'{personagem[0]} | {personagem[1]}\n')
 
+                    if not resultados: #Caso não tenha personagens no banco de dados
+                            print(f"Nenhum personagem encontrado na classe '{escolha_busca_classe.upper()}'.")
+                    
+                    input('Digite ENTER para escrever novamente.')
+                    limpar_terminal()
             else:
+                limpar_terminal()
                 print('Por favor, digite apenas SIM ou NÃO.')
                 input('Digite qualquer tecla para tentar novamente.')
-                limpar_terminal()         
+                limpar_terminal()
+       
     except mysql.connector.Error as e:
         print(f"Ocorreu um erro no banco de dados: {e}")
     finally:
@@ -186,11 +196,12 @@ def limpar_terminal():
     else:
         os.system('clear')  # Limpa o terminal no Linux/MacOS
 
+conexao = create_connection()
+cursor = conexao.cursor()
+
 if __name__ == '__main__':
-    conexao = create_connection()
-    cursor = conexao.cursor()
+    create_connection()
     base()
     tabelas()
     inserts()
     selects()
-
